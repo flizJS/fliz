@@ -1,9 +1,0 @@
-{
-    "courses-data" : {
-        "use" : "static"
-    }
-    ,
-    "asset_pipeline" : {
-        "enable" : true
-    }
-}
