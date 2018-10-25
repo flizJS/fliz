@@ -1,6 +1,7 @@
-// Render a course.
-FLIZ.course = function(course) {
-    var diagram = new FLIZ.Diagram(course);
+window.FLIZ = {};
+
+FLIZ = function(options) {
+    var diagram = new FLIZ.Diagram(options);
 
     // SVG visualization
     var world = d3.select('body').append('div').attr('id', 'world')

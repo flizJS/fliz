@@ -1,4 +1,3 @@
-require("./engine/_fliz.js");
 require("./engine/course.js");
 require("./engine/description.js");
 require("./engine/diagram.js");
