@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+
+    <title>flizJs Example</title>
+
+    <script src="/js/d3.v3.min.js"></script>
+
+    <script src="dist/fliz.js"></script>
+    <link href="dist/fliz.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body class="visualizer">
+  <script>
+    FLIZ.course({
+      contentUrl: "example/content.json",
+      diagramUrl: "example/diagram.json",
+      iconsUrl: "example/icons.svg",
+      name: "FLIZ Example"
+    });
+  </script>
+  </body>
+</html>

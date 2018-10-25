@@ -1,0 +1,24 @@
+{
+    "steps": [
+        {
+            "title": "You want to get started with FLIZ?",
+            "diagramState": "start",
+            "focus": "You"
+        },
+        {
+            "title": "Nice!",
+            "diagramState": "start"
+        },
+        {
+            "title": "All you need is a Laptop...",
+            "diagramState": "laptop",
+            "focus": "Laptop"
+        },
+        {
+            "title": "and a web browser!",
+            "diagramState": "web-browser",
+            "focus": "Web Browser",
+            "focusPath": ["You", "Web Browser"]
+        }
+    ]
+}

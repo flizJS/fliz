@@ -1,0 +1,63 @@
+{
+    "states": [
+        {
+            "diagramState": "start",
+            "actions": [
+                {
+                    "method": "add",
+                    "items": [
+                        {
+                            "icon": "user-2",
+                            "id": "You"
+                        }
+                    ]
+                }
+            ],
+            "positions": {
+                "You": [400, 200]
+            }
+        },
+        {
+            "diagramState": "laptop",
+            "actions": [
+                {
+                    "method": "add",
+                    "items": [
+                        {
+                            "id": "Laptop",
+                            "icon": "laptop",
+                            "from": "You"
+                        }
+                    ]
+                }
+            ],
+            "positions": {
+                "Laptop": [550, 200]
+            },
+            "connections": {
+                "You": "Laptop"
+            }
+        },
+        {
+            "diagramState": "web-browser",
+            "actions": [
+                {
+                    "method": "add",
+                    "items": [
+                        {
+                            "id": "Web Browser",
+                            "icon": "web-browser",
+                            "from": "Laptop"
+                        }
+                    ]
+                }
+            ],
+            "positions": {
+                "Web Browser": [700, 200]
+            },
+            "connections": {
+                "Laptop": "Web Browser"
+            }
+        }
+    ]
+}
