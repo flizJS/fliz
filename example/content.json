@@ -7,7 +7,8 @@
         },
         {
             "title": "Nice!",
-            "diagramState": "start"
+            "diagramState": "start",
+            "focus": "You"
         },
         {
             "title": "All you need is a Laptop...",
@@ -15,10 +16,10 @@
             "focus": "Laptop"
         },
         {
-            "title": "and a web browser!",
+            "title": "...and a web browser!",
             "diagramState": "web-browser",
             "focus": "Web Browser",
-            "focusPath": ["You", "Web Browser"]
+            "focusPath": ["You", "Laptop", "Web Browser"]
         }
     ]
 }
