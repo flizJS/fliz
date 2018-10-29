@@ -1,4 +1,4 @@
-require("./engine/course.js");
+require("./engine/fliz.js");
 require("./engine/description.js");
 require("./engine/diagram.js");
 require("./engine/display.js");
