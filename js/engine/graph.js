@@ -132,8 +132,6 @@ FLIZ.Graph = function(items) {
         return d3.values(__dict__);
     }
 
-    // @return[Array] link objects for all connections in a graph.
-    // For use with d3.svg.diagonal().
     function connections(data) {
         if(data) {
             __connectionLinks__ = [];

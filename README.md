@@ -6,7 +6,7 @@ flizJS (**f**low **vi**suali**z**ation) is an open-source library for creating i
 
 * git clone https://github.com/flizJS/fliz.git
 * cd fliz
-* yarn install
+* npm install
 * npm start
 
 ### License

@@ -7,8 +7,8 @@ FLIZ = function(options) {
     var world = d3.select('body').append('div').attr('id', 'world')
                     .append("svg:svg")
                         .attr('viewBox','0 0 1200 600')
-                        .append("svg:g")
-    ;
+                        .append("svg:g");
+
     // Textual description
     var description = new FLIZ.Description(world);
 
@@ -29,10 +29,11 @@ FLIZ = function(options) {
         FLIZ.Display.livePaths(world, graph, 'focusPath');
 
         navigation.update(graph.meta('index'), graph.meta('total'));
-    })
+    });
 
-    // Discern and load the step from the URL.
     var step = parseInt(window.location.hash.substring(1));
+
     step = (step > 0) ? (step - 1) : 0;
+
     diagram.get(step);
 }

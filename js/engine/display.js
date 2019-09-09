@@ -1,4 +1,4 @@
-// Display a <Graph> using d3.
+// Display a <Graph> using d3
 FLIZ.Display = (function() {
     var config = { duration : 500 };
 
@@ -11,7 +11,7 @@ FLIZ.Display = (function() {
             .attr('class', function(d){ return 'node ' + d.icon })
             .attr("transform", function(d) {
                 return "translate(" + (d.x0 || 0) + "," + (d.y0 || 0) + ")";
-            })
+            });
 
         nodeEnter.call(FLIZ.Style.icon);
 
@@ -22,7 +22,8 @@ FLIZ.Display = (function() {
         nodeEnter.call(FLIZ.Style.labels);
 
         // Transition nodes to their new position.
-        var nodeUpdate = node.transition()
+        var nodeUpdate = nodeEnter
+            .transition()
             .duration(config.duration)
             .attr("transform", function(d) {
                 return "translate(" + d.x + "," + d.y + ")";
@@ -49,29 +50,33 @@ FLIZ.Display = (function() {
     }
 
     // Update link connections between items.
-    // @param[Array] linkData - formated linkData for d3.
+    // @param[Array] linkData - formated linkData for d3
     // @param[String] namespace - used to preserve grouping and uniqueness.
     function connectionLinks(svgContainer, linkData, namespace) {
-        var diagonal = d3.svg.diagonal().projection(function(d) { return [d.x, d.y]; });
+        var line = d3.linkHorizontal()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; });
+
         var classname = 'link-' + namespace;
+        
         // Update the links.
         var link = svgContainer.selectAll("path." + classname)
             .data(linkData, function(d) { return d.source._id + '.' + d.target._id; });
 
         // Enter any new links at the parent's previous position.
         var linkEnter = link.enter().insert("svg:path", "g")
-            .style('stroke-opacity', 0)
+            //.style('stroke-opacity', 0)
             .attr("class", function(d) {
                 return (d.source.public && d.target.public)
                             ? classname + ' public'
                             : classname;
             })
-            .attr("d", diagonal);
+            .attr("d", line);
 
         link.transition()
             .duration(config.duration)
                 .style('stroke-opacity', 1)
-                .attr("d", diagonal);
+                .attr("d", line);
 
 
         link.exit().remove();
@@ -80,7 +85,7 @@ FLIZ.Display = (function() {
     }
 
     // Similar to connectionLinks but adds animated directional flow icons.
-    // @param[Array] linkData - formated linkData for d3.
+    // @param[Array] linkData - formated linkData for d3
     // @param[String] namespace - used to preserve grouping and uniqueness.
     // @param[Boolean] reverse - set true to reverse animation direction.
     function livePaths(svgContainer, graph, namespace, reverse) {
@@ -93,26 +98,28 @@ FLIZ.Display = (function() {
         return pathData;
     }
 
-    // @param[Array] linkData - formated linkData for d3.
+    // @param[Array] linkData - formated linkData for d3
     // @param[Array] paths - actual SVG path DOM nodes required.
     // @param[String] namespace - used to preserve grouping and uniqueness.
     function updateFlowIcons(svgContainer, linkData, paths, namespace, reverse) {
         var markerData = [];
-        paths.map(function(d, i) {
-            if(d) {
-                var slope = (linkData[i].target.y - linkData[i].source.y)/
-                                (linkData[i].target.x - linkData[i].source.x);
-                // this coincides with the transform(rotate()) format (clockwise degrees)
-                var degree = Math.atan(slope) * (180/Math.PI);
-                markerData.push({
-                    path: d,
-                    degree : degree,
-                    reverse : reverse,
-                    iconsUrl : linkData[i].source.iconsUrl,
-                    _id : (linkData[i].source._id + linkData[i].target._id + namespace)
-                });
-            }
-        });
+        if (paths) {
+            paths.map(function(d, i) {
+                if(d) {
+                    var slope = (linkData[i].target.y - linkData[i].source.y)/
+                                    (linkData[i].target.x - linkData[i].source.x);
+                    // this coincides with the transform(rotate()) format (clockwise degrees)
+                    var degree = Math.atan(slope) * (180/Math.PI);
+                    markerData.push({
+                        path: d,
+                        degree : degree,
+                        reverse : reverse,
+                        iconsUrl : linkData[i].source.iconsUrl,
+                        _id : (linkData[i].source._id + linkData[i].target._id + namespace)
+                    });
+                }
+            });
+        }
 
         var markers = svgContainer.selectAll("g." + namespace)
                         .data(markerData, function(d) { return d._id });
@@ -146,7 +153,6 @@ FLIZ.Display = (function() {
     }
 
 
-    // @return[Array] link data for building lines with d3.svg.diagonal().
     function diagonalFocusPathLinks(graph) {
         var links = [],
             paths = [];
@@ -161,13 +167,11 @@ FLIZ.Display = (function() {
 
         paths.forEach(function(path) {
             links = links.concat(diagonalPathLinks(path));
-        })
+        });
 
         return links;
     }
 
-    // @param[Array] path - ordered item objects denoting desired path.
-    // @return[Array] link objects for the path for use with d3.svg.diagonal().
     function diagonalPathLinks(path) {
         var links = [];
         path.forEach(function(d, i) {

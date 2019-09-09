@@ -71,9 +71,9 @@ FLIZ.Diagram = function(config) {
             callback();
         }
         else {
-            d3.json(contentUrl(), function(courseData) {
+            d3.json(contentUrl()).then((courseData) => {
                 if(courseData) {
-                    d3.json(diagramUrl(), function(diagramData) {
+                    d3.json(diagramUrl()).then((diagramData) => {
                         if(diagramData) {
                             States = diagramData.states;
                             processStateIds(diagramData.states);
@@ -82,21 +82,18 @@ FLIZ.Diagram = function(config) {
                                 step.index = i;
                                 step.diagramStateIndex = StateIds[step.diagramState];
                             })
-
-                            dispatch.loaded();
+                            dispatch.call('loaded');
                             callback();
                         }
                         else {
                             throw("Could not retrieve data from: " + diagramUrl() );
                         }
-                    })
-
+                    });
                 }
                 else {
                     throw("Could not retrieve data from: " + contentUrl() );
                 }
-            })
-
+            });
         }
     }
 
@@ -148,16 +145,16 @@ FLIZ.Diagram = function(config) {
         graph.setMeta(CourseSteps[index]);
         graph.setMeta({ "total" : CourseSteps.length });
 
-        dispatch.change(graph);
+        dispatch.call('change', this, graph);
     }
 
     // stay in bounds
     function boundedIndex(index) {
         if (index < 0) {
-            index = CourseSteps.length-1;
+            index = 0;
         }
         else if (index > CourseSteps.length-1) {
-            index = 0;
+            index = CourseSteps.length-1;
         }
 
         return index;
