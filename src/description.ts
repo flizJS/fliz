@@ -1,49 +1,47 @@
-FLIZ.Description = function(container) {
-    this.update = update;
+export class Description {
 
-    var d3Container = container
-                        .append('g')
-                            .attr('class', 'description')
-                            .attr("text-anchor", 'middle')
-                            .attr('transform', 'translate(600,50)')
-    ;
+    d3Container: any;
 
-    function update(heading, content) {
-        d3Container
+    constructor(container: any){
+        this.d3Container = container
+            .append('g')
+                .attr('class', 'description')
+                .attr("text-anchor", 'middle')
+                .attr('transform', 'translate(600,50)');
+    }
+
+    update(heading: any, content: any) {
+        this.d3Container
             .style('opacity', 0)
-            .selectAll('text').remove()
-        ;
+            .selectAll('text').remove();
 
-        var width = d3Container
+        var width = this.d3Container
                         .append('svg:text')
                             .text(heading)
                             .attr('y', 0)
-                            .node().clientWidth
-        ;
+                            .node().clientWidth;
 
         // line-break if needed
         if(width > 1050) {
             var words = heading.split(' '),
                 half = Math.ceil(words.length/2),
                 firstLine = words.slice(0, half).join(' '),
-                secondLine = words.slice(half, words.length).join(' ')
-            ;
+                secondLine = words.slice(half, words.length).join(' ');
 
-            d3Container
-                .selectAll('text').remove()
-            ;
-            d3Container
+            this.d3Container
+                .selectAll('text').remove();
+
+            this.d3Container
                 .append('svg:text')
-                    .text(firstLine)
-            ;
-            d3Container
+                    .text(firstLine);
+
+            this.d3Container
                 .append('svg:text')
                     .attr('y', 40)
-                    .text(secondLine)
-            ;
+                    .text(secondLine);
         }
         else if(content && content.length > 0) {
-            d3Container
+            this.d3Container
                 .append("foreignObject")
                     .attr('transform', 'translate(-400,20)')
                     .attr("width", 800)
@@ -51,11 +49,10 @@ FLIZ.Description = function(container) {
                     .append("xhtml:body")
                         .append('xhtml:div')
                         .attr('class', 'sub-description')
-                            .html(content)
-            ;
+                            .html(content);
         }
 
-        d3Container
+        this.d3Container
             .transition()
                 .delay(1000)
                 .duration(400)

@@ -2,10 +2,15 @@
   "name": "fliz",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/fliz.js",
+  "module": "dist/fliz.es.js",
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "./node_modules/.bin/webpack -p --env production",
-    "start": "./node_modules/.bin/webpack-dev-server --open"
+    "build": "rollup -c",
+    "watch": "rollup -cw"
   },
   "repository": {
     "type": "git",
@@ -18,15 +23,12 @@
   },
   "homepage": "https://github.com/flizJS/fliz#readme",
   "devDependencies": {
-    "css-loader": "^3.2.0",
-    "mini-css-extract-plugin": "^0.8.0",
+    "@types/d3": "^5.7.2",
     "node-sass": "^4.9.3",
-    "sass-loader": "^8.0.0",
-    "style-loader": "^1.0.0",
-    "webpack": "^4.17.2",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.7",
-    "optimize-css-assets-webpack-plugin": "^5.0.1"
+    "rollup": "^1.21.2",
+    "rollup-plugin-scss": "^1.0.2",
+    "rollup-plugin-typescript2": "^0.24.1",
+    "typescript": "^3.6.2"
   },
   "dependencies": {
     "d3": "^5.12.0"

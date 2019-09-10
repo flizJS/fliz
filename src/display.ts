@@ -1,31 +1,34 @@
-// Display a <Graph> using d3
-FLIZ.Display = (function() {
-    var config = { duration : 500 };
+import * as d3 from 'd3';
+import FLIZ from './index';
+import { Style } from './style';
 
-    function nodes(svgContainer, _nodes) {
+export class Display {
+    static config = { duration : 500 };
+
+    static nodes(svgContainer: any, _nodes: any) {
         // Update the nodes
         var node = svgContainer.selectAll("g.node")
-            .data(_nodes, function(d) { return d._id });
+            .data(_nodes, (d: any) => { return d._id });
 
         var nodeEnter = node.enter().append("svg:g")
-            .attr('class', function(d){ return 'node ' + d.icon })
-            .attr("transform", function(d) {
+            .attr('class', (d: any) => { return 'node ' + d.icon })
+            .attr("transform", (d: any) => {
                 return "translate(" + (d.x0 || 0) + "," + (d.y0 || 0) + ")";
             });
 
-        nodeEnter.call(FLIZ.Style.icon);
+        nodeEnter.call(Style.icon);
 
         nodeEnter
-            .filter(function(d) { return !!d.text })
-            .call(FLIZ.Style.text)
+            .filter((d: any) => { return !!d.text })
+            .call(Style.text)
 
-        nodeEnter.call(FLIZ.Style.labels);
+        nodeEnter.call(Style.labels);
 
         // Transition nodes to their new position.
         var nodeUpdate = nodeEnter
             .transition()
-            .duration(config.duration)
-            .attr("transform", function(d) {
+            .duration(Display.config.duration)
+            .attr("transform", (d: any) => {
                 return "translate(" + d.x + "," + d.y + ")";
             });
 
@@ -38,35 +41,35 @@ FLIZ.Display = (function() {
         return node;
     }
 
-    function nodeOverlays(svgContainer, graph) {
+    static nodeOverlays(svgContainer: any, graph: any) {
         var types = ['focus', 'crossOut', "disable"];
         var nodes = svgContainer.selectAll("g.node");
 
-        types.forEach(function(type) {
+        types.forEach((type: string) => {
             nodes
-                .data(graph.metaItems(type), function(d) { return d._id })
-                .call(FLIZ.Style[type]);
+                .data(graph.metaItems(type), (d: any) => { return d._id })
+                .call(Style[type as keyof Style]);
         })
     }
 
     // Update link connections between items.
     // @param[Array] linkData - formated linkData for d3
     // @param[String] namespace - used to preserve grouping and uniqueness.
-    function connectionLinks(svgContainer, linkData, namespace) {
+    static connectionLinks(svgContainer: any, linkData: any, namespace: any) {
         var line = d3.linkHorizontal()
-            .x(function(d) { return d.x; })
-            .y(function(d) { return d.y; });
+            .x((d: any) => { return d.x; })
+            .y((d: any) => { return d.y; });
 
         var classname = 'link-' + namespace;
         
         // Update the links.
         var link = svgContainer.selectAll("path." + classname)
-            .data(linkData, function(d) { return d.source._id + '.' + d.target._id; });
+            .data(linkData, (d: any) => { return d.source._id + '.' + d.target._id; });
 
         // Enter any new links at the parent's previous position.
         var linkEnter = link.enter().insert("svg:path", "g")
             //.style('stroke-opacity', 0)
-            .attr("class", function(d) {
+            .attr("class", (d: any) => {
                 return (d.source.public && d.target.public)
                             ? classname + ' public'
                             : classname;
@@ -74,7 +77,7 @@ FLIZ.Display = (function() {
             .attr("d", line);
 
         link.transition()
-            .duration(config.duration)
+            .duration(Display.config.duration)
                 .style('stroke-opacity', 1)
                 .attr("d", line);
 
@@ -88,12 +91,12 @@ FLIZ.Display = (function() {
     // @param[Array] linkData - formated linkData for d3
     // @param[String] namespace - used to preserve grouping and uniqueness.
     // @param[Boolean] reverse - set true to reverse animation direction.
-    function livePaths(svgContainer, graph, namespace, reverse) {
-        var linkData = diagonalFocusPathLinks(graph);
-        var pathData = connectionLinks(svgContainer, linkData, namespace)
-            .call(FLIZ.Style.pulsePath)
+    static livePaths(svgContainer: any, graph: any, namespace: any, reverse: any) {
+        var linkData = Display.diagonalFocusPathLinks(graph);
+        var pathData = this.connectionLinks(svgContainer, linkData, namespace)
+            .call(Style.pulsePath)
 
-        updateFlowIcons(svgContainer, linkData, pathData[0], namespace, reverse);
+        Display.updateFlowIcons(svgContainer, linkData, pathData[0], namespace, reverse);
 
         return pathData;
     }
@@ -101,10 +104,10 @@ FLIZ.Display = (function() {
     // @param[Array] linkData - formated linkData for d3
     // @param[Array] paths - actual SVG path DOM nodes required.
     // @param[String] namespace - used to preserve grouping and uniqueness.
-    function updateFlowIcons(svgContainer, linkData, paths, namespace, reverse) {
-        var markerData = [];
+    static updateFlowIcons(svgContainer: any, linkData: any, paths: any, namespace: any, reverse: any) {
+        var markerData: any = [];
         if (paths) {
-            paths.map(function(d, i) {
+            paths.map((d: any, i: any) => {
                 if(d) {
                     var slope = (linkData[i].target.y - linkData[i].source.y)/
                                     (linkData[i].target.x - linkData[i].source.x);
@@ -122,19 +125,19 @@ FLIZ.Display = (function() {
         }
 
         var markers = svgContainer.selectAll("g." + namespace)
-                        .data(markerData, function(d) { return d._id });
+                        .data(markerData, (d: any) => { return d._id });
 
         var markersEnter = markers.enter().append("svg:g")
             .attr('class', namespace + ' flow-icon')
-            .call(FLIZ.Style.flowIcon)
+            .call(Style.flowIcon)
         ;
 
         markers.transition()
             .delay(400)
             .duration(1500)
-            .attrTween("transform", function(d) {
+            .attrTween("transform", (d: any) => {
                 var l = d.path.getTotalLength()/2; // mid-point
-                  return function(t) {
+                  return (t: any) => {
                     var offset = t * l;
                     if (d.reverse) {
                         offset = d.path.getTotalLength() - offset;
@@ -145,7 +148,7 @@ FLIZ.Display = (function() {
             })
 
         markers.exit().transition()
-            .duration(config.duration)
+            .duration(Display.config.duration)
             .style("fill-opacity", 0)
             .remove();
 
@@ -153,43 +156,35 @@ FLIZ.Display = (function() {
     }
 
 
-    function diagonalFocusPathLinks(graph) {
-        var links = [],
-            paths = [];
+    static diagonalFocusPathLinks(graph: any) {
+        var links: any = [],
+            paths: any = [];
 
         if (graph.metaItems('focusPath').length > 0) {
-            var paths = [graph.metaItems('focusPath')];
+            paths = [graph.metaItems('focusPath')];
         } else if (graph.meta('focusPaths')) {
-            var paths = graph.meta('focusPaths').map(function(path) {
+            paths = graph.meta('focusPaths').map((path: any) => {
                 return graph.findAll(path);
-            })
+            });
         }
 
-        paths.forEach(function(path) {
-            links = links.concat(diagonalPathLinks(path));
+        paths.forEach((path: any) => {
+            links = links.concat(this.diagonalPathLinks(path));
         });
 
         return links;
     }
 
-    function diagonalPathLinks(path) {
-        var links = [];
-        path.forEach(function(d, i) {
+    static diagonalPathLinks(path: any) {
+        var links: any = [];
+        path.forEach((d: any, i: any) => {
             if(path[i+1]) {
                 links.push({
                     source: d,
                     target: path[i+1]
                 });
             }
-        })
-
+        });
         return links;
     }
-
-    return ({
-        nodes : nodes,
-        nodeOverlays : nodeOverlays,
-        connectionLinks : connectionLinks,
-        livePaths : livePaths
-    })
-})();
+}

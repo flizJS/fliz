@@ -9,7 +9,7 @@
 
     <title>flizJs Example</title>
 
-    <script src="node_modules/d3/dist/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
 
     <script src="dist/fliz.js"></script>
     <link href="dist/fliz.css" type="text/css" rel="stylesheet"/>
@@ -17,12 +17,12 @@
   </head>
   <body class="visualizer">
   <script>
-    var fliz = new FLIZ({
-      contentUrl: "example/content.json",
-      diagramUrl: "example/diagram.json",
-      iconsUrl: "example/icons.svg",
-      name: "FLIZ Example"
-    });
+      new FLIZ({
+        contentUrl: "example/content.json",
+        diagramUrl: "example/diagram.json",
+        iconsUrl: "example/icons.svg",
+        name: "FLIZ Example"
+      });
   </script>
   </body>
 </html>

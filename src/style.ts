@@ -1,82 +1,80 @@
-FLIZ.Style = {
-    duration : 500
-    ,
-    text : function(nodes) {
+export class Style {
+    static duration : 500;
+
+    static text(nodes: any) {
         nodes.append("svg:text")
                 .attr('class', 'text-bg')
                 .attr("dy", 65)
-                .attr("text-anchor", function(d) { return d['text-anchor'] || 'middle' })
-                .text(function(d) { return d.text });
+                .attr("text-anchor", (d: any) => { return d['text-anchor'] || 'middle' })
+                .text((d: any) => { return d.text });
 
         nodes.append("svg:text")
             .attr("dy", 65)
-            .attr("text-anchor", function(d) { return d['text-anchor'] || 'middle' })
-            .text(function(d) { return d.text });
+            .attr("text-anchor", (d: any) => { return d['text-anchor'] || 'middle' })
+            .text((d: any) => { return d.text });
 
         return nodes;
     }
 
-    ,
-    clicker : function(nodes) {
+    static clicker(nodes: any) {
         nodes.append('circle')
             .attr('class', 'clicker')
             .attr('r', 50);
         return nodes;
     }
-    ,
-    icon : function(nodes) {
+
+    static icon(nodes: any) {
         nodes.append('circle')
             .attr('class', 'icon-bg')
             .attr('r', 14)
 
         nodes.append('g').append('use')
-            .attr('xlink:href', function(d) { return (d.iconsUrl + '#' + d.icon) })
-            .attr('class', function(d) { return "icon " + d.icon })
-            .attr('height', function(d) {
+            .attr('xlink:href', (d: any) => { return (d.iconsUrl + '#' + d.icon) })
+            .attr('class', (d: any) =>{ return "icon " + d.icon })
+            .attr('height', (d: any) => {
                 return d.depth > 0 ? 20 : 30;
             })
-            .attr('width', function(d) {
+            .attr('width', (d: any) => {
                 return d.depth > 0 ? 20 : 30;
             })
 
-        nodes.call(FLIZ.Style.clicker);
+        nodes.call(Style.clicker);
 
         return nodes;
-    }
-    ,
-    labels : function(nodes) {
+    };
+
+    static labels(nodes: any) {
         nodes.append("svg:text")
                 .attr('class', 'text-bg')
                 .attr("dy", 35)
                 .attr("text-anchor", "middle")
-                .text(function(d) { return d.name || d.id })
+                .text((d: any) => { return d.name || d.id })
 
         nodes.append("svg:text")
                 .attr("dy", 35)
                 .attr("text-anchor", "middle")
-                .text(function(d) { return d.name || d.id });
+                .text((d: any) => { return d.name || d.id });
 
         return nodes;
     }
 
-    ,
-    focus : function(nodes) {
+    static focus(nodes: any) {
         nodes.selectAll("use")
             .transition()
-            .duration(FLIZ.Style.duration)
+            .duration(Style.duration)
                 .attr('x', -30)
                 .attr('y', -30)
                 .attr('height', 60)
                 .attr('width', 60)
             .transition()
-            .duration(FLIZ.Style.duration)
+            .duration(Style.duration)
                 .attr('x', -25)
                 .attr('y', -25)
                 .attr('height', 50)
                 .attr('width', 50)
 
         nodes.exit().selectAll("use").transition()
-            .duration(FLIZ.Style.duration)
+            .duration(Style.duration)
                 .attr('x', -15)
                 .attr('y', -15)
                 .attr('height', 30)
@@ -84,41 +82,40 @@ FLIZ.Style = {
 
         nodes.selectAll("circle.software")
             .transition()
-                .duration(FLIZ.Style.duration)
+                .duration(Style.duration)
                 .attr('r', 20)
             .transition()
-                .duration(FLIZ.Style.duration)
+                .duration(Style.duration)
                 .attr('r', 16)
 
 
         nodes.exit().selectAll("circle.software").transition()
-            .duration(FLIZ.Style.duration)
+            .duration(Style.duration)
             .attr('r', 8)
 
         nodes.insert('svg:circle', 'g')
             .attr('class', 'focus')
             .attr('r', 0)
             .transition()
-                .duration(FLIZ.Style.duration)
+                .duration(Style.duration)
                 .attr('r', 60)
             .transition()
-                .duration(FLIZ.Style.duration)
+                .duration(Style.duration)
                 .attr('r', 50)
 
 
         nodes.exit().selectAll("circle.focus").transition()
-            .duration(FLIZ.Style.duration)
+            .duration(Style.duration)
             .attr('r', 0)
             .remove()
 
         return nodes;
     }
 
-    ,
-    crossOut : function(nodes) {
+    static crossOut(nodes: any) {
         var size = 30;
         var nodesEnter = nodes.append('use')
-            .attr('xlink:href', function(d) { return (d.iconsUrl + '#cross-out') })
+            .attr('xlink:href', (d: any) => { return (d.iconsUrl + '#cross-out') })
             .attr('class', 'cross-out')
             .attr('x', -(size/2))
             .attr('y', -(size/2))
@@ -131,8 +128,7 @@ FLIZ.Style = {
         return nodes;
     }
 
-    ,
-    disable : function(nodes) {
+    static disable(nodes: any) {
         nodes.style('opacity', 0.7)
 
         nodes.exit()
@@ -141,29 +137,27 @@ FLIZ.Style = {
         return nodes;
     }
 
-    ,
-    pulsePath : function(nodes) {
+    static pulsePath(nodes: any) {
         nodes
             .transition()
-                .duration(FLIZ.Style.duration)
+                .duration(Style.duration)
                 .style('stroke-opacity', 1)
                 .style('stroke-width', 4)
             .transition()
-                .duration(FLIZ.Style.duration)
+                .duration(Style.duration)
                 .style('stroke-width', 2)
 
         return nodes;
     }
 
-    ,
-    flowIcon : function(nodes) {
+    static flowIcon(nodes: any) {
         nodes.append('use')
-            .attr('xlink:href', function(d) { return (d.iconsUrl + '#flow-icon') })
+            .attr('xlink:href', (d: any) => { return (d.iconsUrl + '#flow-icon') })
             .attr('height', 20)
             .attr('width', 20)
             .attr('x', -10)
             .attr('y', -10)
-            .attr('transform', function(d) {
+            .attr('transform', (d: any) => {
                 return 'rotate(' + (d.degree + (d.reverse ? 180 : 0)) + ')';
             });
 
