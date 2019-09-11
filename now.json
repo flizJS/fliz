@@ -1,0 +1,10 @@
+{
+    "version": 2,
+    "name": "flizJs",
+    "alias": ["www.flizjs.com"],
+    "builds": [
+        { "src": "index.html", "use": "@now/static" },
+        { "src": "dist/**", "use": "@now/static" },
+        { "src": "example/**", "use": "@now/static" }
+    ]
+}
