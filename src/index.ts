@@ -8,33 +8,37 @@ import '../style/spinner.scss';
 import '../style/diagram.scss';
 import '../style/layout.scss';
 import '../style/mobile.scss';
+import { Graph } from './graph';
 
 export default class FLIZ {
 
-    public diagram: any;
-    public world: any;
-    public description: any;
-    public navigation: any;
-    public step: any;
+    public diagram: Diagram;
+    public description: Description;
+    public navigation: Navigation;
+
+    public world: any; // TODO: Type
+    public step: number;
 
     constructor(options: any) {
         this.diagram = new Diagram(options);
 
-        this.world = d3.select('body').append('div').attr('id', 'world')
-                        .append("svg:svg")
-                            .attr('viewBox','0 0 1200 600')
-                            .append("svg:g");
+        this.world = d3.select('body')
+            .append('div')
+            .attr('id', 'world')
+            .append("svg:svg")
+            .attr('viewBox', '0 0 1200 600')
+            .append("svg:g");
 
         this.description = new Description(this.world);
 
         this.navigation = new Navigation({
-            diagram : this.diagram,
-            selector : '#prev-next',
-            tocSelector : '#table-of-contents',
-            stepToggleSelector : '#steps-count'
-        })
+            diagram: this.diagram,
+            selector: '#prev-next',
+            tocSelector: '#table-of-contents',
+            stepToggleSelector: '#steps-count'
+        });
 
-        this.diagram.on('change', (graph: any) => {
+        this.diagram.on('change', (graph: Graph) => {
             this.description.update(graph.meta('title'), graph.meta('content'));
 
             Display.nodes(this.world, graph.nodes());

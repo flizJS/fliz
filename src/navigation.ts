@@ -1,19 +1,33 @@
 import { TableOfContents } from "./toc";
 import * as d3 from 'd3';
+import { Diagram } from "./diagram";
+import { Step } from "./models/content";
+import { PoweredBy } from "./poweredby";
 
+interface NavigationConfig {
+    diagram: Diagram,
+    selector: string,
+    tocSelector: string,
+    stepToggleSelector: string
+}
 
 export class Navigation {
+
     current: number;
     tableOfContents: TableOfContents;
-    config: any;
-    
-    constructor(config: any) {
-        this.config = config;
-        this.current = 0;
-        this.tableOfContents = new TableOfContents(config.tocSelector, config.stepToggleSelector);
+    poweredBy: PoweredBy;
 
-        this.config.diagram.on('loaded', () => {
-            this.config.diagram.courseSteps((steps: any) => {
+    private navConfig: NavigationConfig;
+    
+    constructor(navConfig: NavigationConfig) {
+        this.navConfig = navConfig;
+        this.current = 0;
+        
+        this.poweredBy = new PoweredBy();
+        this.tableOfContents = new TableOfContents(navConfig.tocSelector, navConfig.stepToggleSelector);
+
+        this.navConfig.diagram.on('loaded', () => {
+            this.navConfig.diagram.courseSteps((steps: Array<Step>) => {
                 this.draw();
 
                 this.tableOfContents.updateList(steps, null)
@@ -21,20 +35,20 @@ export class Navigation {
                         d3.event.preventDefault();
                         this.navigate(i);
                         this.tableOfContents.hide();
-                    })
+                    });
 
                 d3.select("body")
                     .on("keydown", () => {
-                        if(d3.event.keyCode === 39) // right arrow
+                        if (d3.event.keyCode === 39) // right arrow
                             this.next();
                         else if(d3.event.keyCode === 37) // left arrow
                             this.previous();
-                    })
+                    });
             })
         });
     }
 
-    update(index: any, total: any) {
+    update(index: number, total: number) {
         this.current = index;
         this.tableOfContents.updateStep(index, total);
         this.tableOfContents.highlight(this.current);
@@ -50,14 +64,15 @@ export class Navigation {
     }
 
     navigate(index: any) {
-        this.config.diagram.getBounded(index);
+        this.navConfig.diagram.getBounded(index);
     }
 
     draw() {
         var container = document.createElement("div");
-        container.id = this.config.selector.slice(1);
+        container.id = this.navConfig.selector.slice(1);
 
         var d3C = d3.select(container);
+    
         d3C.append('svg')
             .attr('class', 'previous')
             .on('click', this.previous.bind(this))

@@ -1,87 +1,80 @@
 import * as d3 from 'd3';
-
 import { Graph } from "./graph";
-import {dispatch} from 'd3-dispatch';
+import { Step, ContentData } from './models/content';
+import { DiagramData, State, Positions, Connections, Action, Item } from './models/diagram';
+
 
 export class Diagram {
 
     config: any;
-    dispatch: any; //d3.Dispatch<EventTarget>;
+    dispatch: d3.Dispatch<EventTarget>;
+
+    private _allowedMethods: any = ['add', 'update', 'remove'];
+    private _states: Array<State>;
+    private _courseSteps: Array<Step>;
+    private _stateIds: any = {};
 
     constructor(config: any) {
-        if(!config) throw("Diagram endpoints are required");
-        if(!config.iconsUrl) throw("'iconsUrl' endpoint is required");
+        if (!config) throw("Diagram endpoints are required");
+        if (!config.iconsUrl) throw("'iconsUrl' endpoint is required");
+
         this.config = config;
 
         this.dispatch = d3.dispatch('loaded', 'change');
     }
 
-    // Add event listeners.
-    on(type: any, listener: any) {
-        this.dispatch.on(type, listener);
+    // Add event listeners
+    on(type: any, callback: any) {
+        this.dispatch.on(type, callback);
     }
 
-    // Get graph at courseStep <index>.
-    get(index: any) {
+    // Get graph at courseStep <index>
+    get(index: number) {
         this.resolve(() => {
             this.getGraph(index);
-        })
+        });
     }
 
-    // Get graph at courseStep <index> where <index> is coerced to remain within courseStep bounds.
-    getBounded(index: any) {
+    // Get graph at courseStep <index> where <index> is coerced to remain within courseStep bounds
+    getBounded(index: number) {
         this.resolve(() => {
             index = this.boundedIndex(index);
             this.getGraph(index);
-        })
+        });
     }
 
-    // Get all courseSteps.
-    // The callback receives:
-    //  [Array] - courseSteps. An ordered list of courseSteps.
-    courseSteps(callback: any) {
+    // Get all courseSteps
+    courseSteps(callback: (courseSteps: any) => any) {
         this.resolve(() => {
-            callback(this.CourseSteps)
-        })
+            callback(this._courseSteps);
+        });
     }
-    
-
-    // PRIVATE
-    // Private functions assume the data has loaded.
-    AllowedMethods: any = ['add', 'update', 'remove'];
-    States: any;
-    CourseSteps: any;
-    StateIds: any = {};
-
 
     // Resolve the state (data) of the diagram.
     // Data comes from a remote source so every public function should
     // execute its logic as a callback to resolve();
-    resolve(callback: any) {
-        if(this.CourseSteps) {
+    resolve(callback: () => any) {
+        if (this._courseSteps) {
             callback();
-        }
-        else {
-            d3.json(this.contentUrl()).then((courseData: any) => {
-                if(courseData) {
-                    d3.json(this.diagramUrl()).then((diagramData: any) => {
-                        if(diagramData) {
-                            this.States = diagramData.states;
+        } else {
+            d3.json(this.contentUrl()).then((courseData: ContentData) => {
+                if (courseData) {
+                    d3.json(this.diagramUrl()).then((diagramData: DiagramData) => {
+                        if (diagramData) {
+                            this._states = diagramData.states;
                             this.processStateIds(diagramData.states);
-                            this.CourseSteps = courseData.steps;
-                            this.CourseSteps.forEach((step: any, i: any) => {
+                            this._courseSteps = courseData.steps;
+                            this._courseSteps.forEach((step: any, i: any) => {
                                 step.index = i;
-                                step.diagramStateIndex = this.StateIds[step.diagramState];
+                                step.diagramStateIndex = this._stateIds[step.diagramState];
                             })
                             this.dispatch.call('loaded');
                             callback();
-                        }
-                        else {
+                        } else {
                             throw("Could not retrieve data from: " + this.diagramUrl() );
                         }
                     });
-                }
-                else {
+                } else {
                     throw("Could not retrieve data from: " + this.contentUrl() );
                 }
             });
@@ -90,31 +83,31 @@ export class Diagram {
 
     processStateIds(states: any) {
         states.forEach((state: any, i: any) => {
-            if(state.diagramState) {
-                this.StateIds[state.diagramState] = i;
+            if (state.diagramState) {
+                this._stateIds[state.diagramState] = i;
             }
         })
     }
 
-    // This is asking me for a courseStep index.
+    // This is asking for a courseStep index.
     // diagrams are index dependent based on building the graph.
     // Example: CourseSteps[0] -> States[2]
     // The graph is not directly returned, rather it is emitted on the 'change' event.
     // ex: diagram.on('change', function(graph) {});
-    getGraph(index: any) {
-        var stateIndex = this.CourseSteps[index].diagramStateIndex,
-            states = this.States.slice(0, stateIndex+1);
-        var positions = states.reduce((accumulator: any, state: any) => {
-                            if(state.positions) {
-                                for(const key in state.positions) {
+    getGraph(index: number) {
+        var stateIndex = this._courseSteps[index].diagramStateIndex,
+            states = this._states.slice(0, stateIndex + 1);
+        var positions: Positions = states.reduce((accumulator: any, state: State) => {
+                            if (state.positions) {
+                                for (const key in state.positions) {
                                     accumulator[key] = state.positions[key];
                                 }
                             }
                             return accumulator;
                           }, {});
-        var connections = states.reduce((accumulator: any, state: any) => {
-                            if(state.connections) {
-                                for(const key in state.connections) {
+        var connections: Connections = states.reduce((accumulator: any, state: State) => {
+                            if (state.connections) {
+                                for (const key in state.connections) {
                                     accumulator[key] = state.connections[key];
                                 }
                             }
@@ -122,42 +115,39 @@ export class Diagram {
                           }, {});
 
         var items = JSON.parse(JSON.stringify(states.shift().actions[0].items)),
-            graph = new Graph(this.processItems(items)),
-            metadata = {};
+            graph = new Graph(this.processItems(items));
 
         // Note this process mutates the graph object in place.
-        states.reduce((accumulator: any, state: any) => {
+        states.reduce((accumulator: any, state: State) => {
             return this.merge(accumulator, state);
         }, graph);
 
         graph.position(positions);
         graph.connections(connections);
 
-        graph.setMeta(this.CourseSteps[index]);
-        graph.setMeta({ "total" : this.CourseSteps.length });
+        graph.setMeta(this._courseSteps[index]);
+        graph.setMeta({ "total" : this._courseSteps.length });
 
-        this.dispatch.call('change', null, graph); // TODO
+        this.dispatch.call('change', null, graph);
     }
 
-    // stay in bounds
-    boundedIndex(index: any) {
+    boundedIndex(index: number) {
         if (index < 0) {
             index = 0;
         }
-        else if (index > this.CourseSteps.length-1) {
-            index = this.CourseSteps.length-1;
+        else if (index > this._courseSteps.length-1) {
+            index = this._courseSteps.length-1;
         }
-
         return index;
     }
 
-    merge(graph: any, state: any) {
+    merge(graph: any, state: State) {
         var actions = state.actions || [];
-        if(actions.length === 0) {
+        if (actions.length === 0) {
             throw "The diagramState '"+ state.diagramState + "' has 0 action statements."
         }
 
-        actions.forEach((action: any) => {
+        actions.forEach((action: Action) => {
             this.verifyMethod(action.method);
 
             switch (action.method) {
@@ -168,26 +158,26 @@ export class Diagram {
                     graph.update(action.items);
                     break;
                 case "remove":
-                    var names = action.items.map((item: any)=> { return item.id });
+                    var names = action.items.map((item: Item)=> item.id);
                     graph.drop(names);
                     break;
             }
-        })
+        });
 
         return graph;
     }
 
-    processItems(items: any) {
-        items.forEach((d: any) => {
+    processItems(items: Array<Item>) {
+        items.forEach((d: Item) => {
             d.iconsUrl = this.config.iconsUrl;
-        })
+        });
         return items;
     }
 
-    verifyMethod(method: any) {
-        if(this.AllowedMethods.indexOf(method) === -1) {
+    verifyMethod(method: string) {
+        if (this._allowedMethods.indexOf(method) === -1) {
             throw("The method: '" + method + "' is not recognized."
-                    + "\n Supported methods are: " + this.AllowedMethods.toString());
+                    + "\n Supported methods are: " + this._allowedMethods.toString());
         }
     }
 

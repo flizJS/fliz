@@ -1,18 +1,19 @@
 import * as d3 from 'd3';
+import { Step } from './models/content';
 
 export class TableOfContents{
 
     d3Toc: any;
     d3StepToggle: any;
 
-    constructor (containerSelector: any, stepToggleSelector: any) {
+    constructor (tocSelector: string, stepToggleSelector: string) {
 
         this.d3StepToggle = d3.select('body').append('div')
             .attr('id', stepToggleSelector.slice(1))
             .on('click', this.toggle.bind(this));
 
         var container = document.createElement('div');
-        container.id = containerSelector.slice(1);
+        container.id = tocSelector.slice(1);
 
         this.d3Toc = d3.select(container);
         this.d3Toc.append('h4').text('Table of Contents');
@@ -21,7 +22,7 @@ export class TableOfContents{
         document.body.appendChild(this.d3Toc.node());
     }
 
-    updateStep(index: any, total: any) {
+    updateStep(index: number, total: number) {
         var current = index + 1;
         var menu = '<svg viewBox="0 0 90 90" enable-background="new 0 0 90 90" xml:space="preserve">'
                     + '<path d="M29,34h32c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2H29c-1.1,0-2,0.9-2,2C27,33.1,27.9,34,29,34z"/>'
@@ -32,30 +33,25 @@ export class TableOfContents{
 
         var count = '<em>'+ current + '</em> of ' + total + menu;
         this.d3StepToggle.html(count);
-
-        d3.select('#signup-form').classed('active', current === total);
     }
 
     // update the table of contents list.
-    updateList(steps: any, index: any) {
-        var self = this;
-        let current = index || 0;
-
-        steps.forEach((d: any, i: any) => {
-            d.active = (i === index);
-        })
+    updateList(steps: Array<Step>, index: number) {
+        steps.forEach((step: Step, i: number) => {
+            step.active = (i === index);
+        });
 
         var nodes = this.d3Toc.select('ol').selectAll('li')
                     .data(steps)
-                    .classed('active', (d: any) => { return d.active })
+                    .classed('active', (d: Step) => d.active);
 
         nodes.exit().remove();
 
         return nodes.enter()
             .append('li')
-                .classed('active', (d: any) => { return d.active })
+                .classed('active', (d: Step) => d.active)
             .append('a')
-                .html((d: any) => { return d.title })
+                .html((d: Step) => d.title);
     }
 
     toggle() {
@@ -70,9 +66,9 @@ export class TableOfContents{
         this.d3Toc.classed('active', false);
     }
 
-    highlight(index: any) {
+    highlight(index: number) {
         this.d3Toc.select('ol').selectAll('li')
             .classed('active', false)
-            .filter(':nth-child('+ (index+1) +')').classed('active', true);
+            .filter(':nth-child('+ (index + 1) +')').classed('active', true);
     }
 }

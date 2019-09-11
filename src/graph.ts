@@ -1,43 +1,44 @@
 import * as d3 from 'd3';
+import { Positions, Connections } from './models/diagram';
 
-// The Graph object models our data format as a graph of nodes/items and connections.
+// The Graph object models our data format as a graph of nodes/items and connections
 export class Graph {
-    __dict__: any = {};
-    __meta__: any = {};
-    __connectionLinks__: any[];
+    private _dict: any = {};
+    private _meta: any = {};
+    private _connectionLinks: any[];
     
     constructor(items: any) {
-        this.__dict__ = this.dictify(items);
-        this.__meta__ = {};
-        this.__connectionLinks__ = [];
+        this._dict = this.dictify(items);
+        this._meta = {};
+        this._connectionLinks = [];
     }
 
     meta(key: any) {
-        return this.__meta__[key];
+        return this._meta[key];
     }
 
     setMeta(attributes: any) {
         for (const key in attributes) {
-            this.__meta__[key] = attributes[key];
+            this._meta[key] = attributes[key];
         }
     }
 
-    // Get items mappped from a meta attribute holding item ids.
+    // Get items mappped from a meta attribute holding item ids
     metaItems(key: any) {
         return this.findAll(this.meta(key));
     }
 
-    // Get an item.
+    // Get an item
     get(key: any) {
-        return this.__dict__[key];
+        return this._dict[key];
     };
 
-    // Set an item.
+    // Set an item
     set(key: any, value: any) {
-        this.__dict__[key] = value;
+        this._dict[key] = value;
     };
 
-    // Get an item or throw error if not found.
+    // Get an item or throw error if not found
     find(key: any) {
         if(this.get(key)) {
             return this.get(key);
@@ -53,7 +54,7 @@ export class Graph {
             if(this.get(name)) {
                 items.push(this.get(name));
             }
-        })
+        });
 
         return items;
     };
@@ -61,24 +62,24 @@ export class Graph {
     findAll(keys: any) {
         return this.coerceArray(keys).map((name) => {
             return this.find(name);
-        })
+        });
     };
 
-    // Delete an item.
+    // Delete an item
     _delete(key: any) {
-        delete this.__dict__[key];
+        delete this._dict[key];
     }
 
-    // Add an item to the graph in relation (mapped) to another item.
+    // Add an item to the graph in relation (mapped) to another item
     add(items: any) {
         this.addToDict(items);
     }
 
-    // Update item attributes.
+    // Update item attributes
     update(items: any) {
         this.coerceArray(items).forEach((item) => {
             for(const key in item) {
-                this.__dict__[item.id][key] = item[key];
+                this._dict[item.id][key] = item[key];
             }
         })
     }
@@ -95,79 +96,68 @@ export class Graph {
 
     // Set x and y coordinates for each item.
     // Note this is mutable service, it mutates the graph.
-    position(data: any) {
-        for(const id in this.__dict__) {
-            this.__dict__[id]._id = this.__dict__[id].id || this.__dict__[id].name;
+    position(data: Positions) {
+        for(const id in this._dict) {
+            this._dict[id]._id = this._dict[id].id || this._dict[id].name;
             var coord = {
                 x : data[id][0],
                 y : data[id][1] + 130
             }
 
-            this.__dict__[id].x0 = 600;
-            this.__dict__[id].y0 = 500;
-            this.__dict__[id].x = coord.x;
-            this.__dict__[id].y = coord.y;
+            this._dict[id].x0 = 600;
+            this._dict[id].y0 = 500;
+            this._dict[id].x = coord.x;
+            this._dict[id].y = coord.y;
         }
 
-        for(const id in this.__dict__) {
-            if(this.__dict__[id].from && this.get(this.__dict__[id].from)) {
-                var from = this.get(this.__dict__[id].from);
-                this.__dict__[id].x0 = from.x;
-                this.__dict__[id].y0 = from.y;
+        for(const id in this._dict) {
+            if(this._dict[id].from && this.get(this._dict[id].from)) {
+                var from = this.get(this._dict[id].from);
+                this._dict[id].x0 = from.x;
+                this._dict[id].y0 = from.y;
             }
         }
     }
 
     nodes() {
-        return d3.values(this.__dict__);
+        return d3.values(this._dict);
     }
 
-    connections(data: any) {
-        if(data) {
-            this.__connectionLinks__ = [];
+    connections(data: Connections = null) {
+        if (data) {
+            this._connectionLinks = [];
 
-            for(const key in data) {
-                if(this.get(key)) {
-                    this.getAll(data[key]).forEach((item:any) => {
-                        this.__connectionLinks__.push({
+            for (const key in data) {
+                if (this.get(key)) {
+                    this.getAll(data[key]).forEach((item: any) => {
+                        this._connectionLinks.push({
                             source: this.get(key),
                             target: item
                         });
-                    })
+                    });
                 }
             }
         }
-
-        return this.__connectionLinks__;
+        return this._connectionLinks;
     }
 
-    // Private
-
     // Generate a dictionary graph from an ordered Array represenation.
-    dictify(items: any) {
+    private dictify(items: any) {
         var dict: any = {};
         items.forEach((item: any, i: any) => {
             dict[item.id] = item;
-        })
-
+        });
         return dict;
     }
 
-    addToDict(items: any) {
+    private addToDict(items: any) {
         var dict = this.dictify(items);
         for (const key in dict) {
             this.set(key, dict[key]);
         };
     }
 
-    coerceArray(input: any) {
-        var result = [];
-        if(Array.isArray(input)) {
-            result = input;
-        }
-        else if(input) {
-            result.push(input);
-        }
-        return result;
+    private coerceArray<T>(input: T | Array<T>): Array<T>  {
+        return Array.isArray(input) ? input : input ? [input] : [];
     }
 }
