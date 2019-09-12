@@ -3,7 +3,6 @@ import { Graph } from './graph';
 import { Step, ContentData } from './models/content';
 import { DiagramData, State, Positions, Connections, Action, Item } from './models/diagram';
 
-
 export class Diagram {
 
     config: any;

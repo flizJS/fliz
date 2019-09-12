@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
-
 import { Step } from './models/content';
 
-export class TableOfContents{
+export class TableOfContents {
 
     d3Toc: any;
     d3StepToggle: any;

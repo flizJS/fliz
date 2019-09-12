@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
-
-import { Positions, Connections } from './models/diagram';
+import { Connections, Positions } from './models/diagram';
 
 // The Graph object models our data format as a graph of nodes/items and connections
 export class Graph {
