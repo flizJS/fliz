@@ -28,7 +28,6 @@ export default {
       useTsconfigDeclarationDir: true,
     }),
     scss({
-      output: true,
       output: 'dist/fliz.css',
       outputStyle: 'compressed'
     })

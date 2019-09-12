@@ -1,8 +1,9 @@
-import { TableOfContents } from "./toc";
 import * as d3 from 'd3';
-import { Diagram } from "./diagram";
-import { Step } from "./models/content";
-import { PoweredBy } from "./poweredby";
+
+import { TableOfContents } from './toc';
+import { Diagram } from './diagram';
+import { Step } from './models/content';
+import { PoweredBy } from './poweredby';
 
 interface NavigationConfig {
     diagram: Diagram,

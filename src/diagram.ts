@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { Graph } from "./graph";
+import { Graph } from './graph';
 import { Step, ContentData } from './models/content';
 import { DiagramData, State, Positions, Connections, Action, Item } from './models/diagram';
 

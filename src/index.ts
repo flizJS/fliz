@@ -1,14 +1,12 @@
 import * as d3 from 'd3';
-import { Diagram } from "./diagram";
-import { Description } from "./description";
-import { Navigation } from "./navigation";
-import { Display } from "./display";
 
-import '../style/spinner.scss';
-import '../style/diagram.scss';
-import '../style/layout.scss';
-import '../style/mobile.scss';
+import { Diagram } from './diagram';
+import { Description } from './description';
+import { Navigation } from './navigation';
+import { Display } from './display';
 import { Graph } from './graph';
+
+import '../style/index.scss';
 
 export default class FLIZ {
 
