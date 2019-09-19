@@ -1,6 +1,6 @@
 ## flizJS
 
-flizJS (**f**low **vi**suali**z**ation) is an open-source library for creating interactive flow diagrams. It is based on the work of Jade Dominguez [nilclass.com](http://nilclass.com/).
+flizJS (**fl**ow v**i**suali**z**ation) is an open-source library for creating interactive flow diagrams. It is based on the work of Jade Dominguez [nilclass.com](http://nilclass.com/).
 
 ## Getting started
 
