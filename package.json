@@ -24,9 +24,9 @@
   "homepage": "https://github.com/flizJS/fliz#readme",
   "devDependencies": {
     "@types/d3": "^5.7.2",
-    "node-sass": "^4.9.3",
+    "node-sass": "^8.0.0",
     "rollup": "^1.21.2",
-    "rollup-plugin-scss": "^1.0.2",
+    "rollup-plugin-scss": "^4.0.0",
     "rollup-plugin-typescript2": "^0.24.1",
     "typescript": "^3.6.2"
   },
